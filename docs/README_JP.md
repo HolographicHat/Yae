@@ -31,8 +31,3 @@
 
 ## フィードバックや問題?
 [issues](https://github.com/HolographicHat/YaeAchievement/issues) または [QQ群: 598720036](https://qm.qq.com/q/mCQ8PwpxJY)
-
-## よくある質問
-1. Q: 原神を起動中にエラーが発生しました: データ例外 (31-4302)   
-   A: ソフトウェアを原神のディレクトリに配置しないでください。
-  

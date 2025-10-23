@@ -31,7 +31,3 @@
 
 ## 问题反馈
 [issues](https://github.com/HolographicHat/YaeAchievement/issues)或[QQ群: 598720036](https://qm.qq.com/q/mCQ8PwpxJY)
-
-## 常见问题
-1. Q: 原神启动时报错: 数据异常(31-4302)   
-   A: 不要把软件和原神主程序放一起   

@@ -31,8 +31,3 @@
 
 ## Feedback or Problem?
 [issues](https://github.com/HolographicHat/YaeAchievement/issues) or [QQ群: 598720036](https://qm.qq.com/q/mCQ8PwpxJY)
-
-## Frequently asked questions
-1. Q: Error while Genshin started: Data Exception (31-4302)   
-   A: Don't place software in the directory containing Genshin Impact.
-  
