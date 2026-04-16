@@ -21,7 +21,7 @@ public sealed class PlayerStoreNotify {
 
     public static bool OnReceive(BinaryReader reader) {
         var bytes = reader.ReadBytes();
-        Instance.ParseFrom(bytes);
+        //Instance.ParseFrom(bytes);
         return true;
     }
 
