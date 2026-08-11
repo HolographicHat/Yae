@@ -27,6 +27,9 @@ internal static unsafe class Application {
         //
         MinHook.Attach(ToInt32, &OnToInt32, out _toInt32);
         MinHook.Attach(UpdateNormalProp, &OnUpdateNormalProp, out _updateNormalProp);
+        if ((nint) EventSystemUpdate != Native.ModuleBase) {
+            MinHook.Attach(EventSystemUpdate, &OnEventSystemUpdate, out _eventSystemUpdate);
+        }
         return 0;
     }
 
@@ -137,6 +140,26 @@ internal static unsafe class Application {
         _updateNormalProp(@this, type, value, lastValue, state);
         if (RequiredPlayerProperties.Remove(type)) {
             Goshujin.PushPlayerProp(type, value);
+        }
+    }
+
+    #endregion
+
+    #region EnterGate
+
+    private static long _lastTryEnterTime;
+    
+    private static delegate*unmanaged<nint, void> _eventSystemUpdate;
+
+    [UnmanagedCallersOnly]
+    public static void OnEventSystemUpdate(nint @this) {
+        _eventSystemUpdate(@this);
+        if (Environment.TickCount64 - _lastTryEnterTime > 200) {
+            var obj = FindGameObject(NewString("BtnStart"u8.AsPointer()));
+            if (obj != 0 && SimulatePointerClick(@this, obj)) {
+                MinHook.Detach((nint) EventSystemUpdate);
+            }
+            _lastTryEnterTime = Environment.TickCount64;
         }
     }
 
