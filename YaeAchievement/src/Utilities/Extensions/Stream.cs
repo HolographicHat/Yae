@@ -35,4 +35,8 @@ internal static class CodedInputStreamExtensions {
         return new CodedInputStream(ReadRawBytes(stream, stream.ReadLength()));
     }
 
+    public static byte[] ReadLengthDelimitedBytes(this CodedInputStream stream) {
+        return ReadRawBytes(stream, stream.ReadLength());
+    }
+
 }

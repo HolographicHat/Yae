@@ -9,6 +9,9 @@ internal static class CmdId {
 
     public static uint PlayerStoreNotify { get; set; }
 
+    // 与 YaeAchievement.Parsers.AvatarDataNotify.AvatarCmdId 保持一致
+    public const uint AvatarDataNotify = 6586;
+
 }
 
 internal static unsafe class GameMethod {
@@ -70,6 +73,16 @@ internal static class Goshujin {
         }
     }
 
+    public static void PushAvatarData(Span<byte> data) {
+        using (_lock.EnterScope()) {
+            _pipeWriter.Write((byte) 4);
+            _pipeWriter.Write(data.Length);
+            _pipeWriter.Write(data);
+            _avatarDataPushed = true;
+            ExitIfFinished();
+        }
+    }
+
     public static void LoadCmdTable() {
         _pipeWriter.Write((byte) 0xFC);
         CmdId.AchievementAllDataNotify = _pipeReader.ReadUInt32();
@@ -98,8 +111,10 @@ internal static class Goshujin {
 
     private static bool _achievementDataPushed;
 
+    private static bool _avatarDataPushed;
+
     private static void ExitIfFinished() {
-        if (_storeDataPushed && _achievementDataPushed && Application.RequiredPlayerProperties.Count == 0) {
+        if (_storeDataPushed && _achievementDataPushed && _avatarDataPushed && Application.RequiredPlayerProperties.Count == 0) {
             _pipeWriter.Write((byte) 0xFF);
             _pipeReader.ReadBoolean();
             Environment.Exit(0);

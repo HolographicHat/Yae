@@ -51,6 +51,8 @@ internal static unsafe class Application {
             Goshujin.PushStoreData(GetData(val));
         } else if (cmdId == CmdId.AchievementAllDataNotify) {
             Goshujin.PushAchievementData(GetData(val));
+        } else if (cmdId == CmdId.AvatarDataNotify) {
+            Goshujin.PushAvatarData(GetData(val));
         }
         return ret;
         static Span<byte> GetData(byte* val) {

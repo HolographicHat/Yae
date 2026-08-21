@@ -1,0 +1,220 @@
+﻿syntax = "proto3";
+
+import "StoreData.proto";
+
+option csharp_namespace = "Proto";
+
+enum AvatarExpeditionState {
+    AvatarExpeditionNone = 0;
+    AvatarExpeditionDoing = 1;
+    AvatarExpeditionFinishWaitReward = 2;
+    AvatarExpeditionCallbackWaitReward = 3;
+    AvatarExpeditionLocked = 4;
+}
+
+message PropValue {
+    uint32 type = 1;
+    oneof value {
+        int64 ival = 2;
+        float fval = 3;
+    }
+    int64 val = 4;
+}
+
+message SceneWeaponInfo {
+    uint32 entity_id = 1;
+    uint32 gadget_id = 2;
+    uint32 item_id = 3;
+    uint64 guid = 4;
+    uint32 level = 5;
+    uint32 promote_level = 6;
+    AbilitySyncStateInfo ability_info = 7;
+    map<uint32, uint32> affix_map = 8;
+    EntityRendererChangedInfo renderer_changed_info = 9;
+    bool BCGHDDKMHFK = 10;
+    uint32 _weapon_skin_id = 11;
+}
+
+message EntityRendererChangedInfo {
+    map<string, uint32> changed_renderers = 1;
+    uint32 visibility_count = 2;
+    bool is_cached = 3;
+}
+
+message AbilityString {
+    oneof type {
+        string str = 1;
+        uint32 hash = 2;
+    }
+}
+
+message Unk7000_CDJPCNFDBMG {
+    AbilityString PIJJFGBLDBD = 1;
+    float BKPMJEHNJCH = 3;
+}
+
+message AbilityAppliedAbility {
+    AbilityString ability_name = 1;
+    AbilityString ability_override = 2;
+    repeated Unk7000_CDJPCNFDBMG override_map = 3;
+    uint32 instanced_ability_id = 4;
+}
+
+message ModifierDurability {
+    float reduce_ratio = 1;
+    float remaining_durability = 2;
+}
+
+enum Unk7000_LJGEHMILKEM {
+    Normal = 0;
+    ServerBuff = 1;
+    Server = 2;
+}
+
+message AbilityAttachedModifier {
+    bool is_invalid = 1;
+    uint32 owner_entity_id = 2;
+    uint32 instanced_modifier_id = 3;
+    int32 attach_name_hash = 5;
+    Unk7000_LJGEHMILKEM FPDAONBEBHK = 6;
+}
+
+message AbilityAppliedModifier {
+    int32 modifier_local_id = 1;
+    uint32 parent_ability_entity_id = 2;
+    AbilityString parent_ability_name = 3;
+    AbilityString parent_ability_override = 4;
+    uint32 instanced_ability_id = 5;
+    uint32 instanced_modifier_id = 6;
+    float exist_duration = 7;
+    AbilityAttachedModifier attached_instanced_modifier = 8;
+    uint32 apply_entity_id = 9;
+    bool is_attached_parent_ability = 10;
+    ModifierDurability modifier_durability = 11;
+    uint32 sbuff_uid = 12;
+    bool NKFMJEMJLPK = 14;
+    uint32 IEHGPFCDEMH = 15;
+    Unk7000_LJGEHMILKEM FPDAONBEBHK = 16;
+}
+
+message AbilityMixinRecoverInfo {}
+
+message AbilitySyncStateInfo {
+    bool is_inited = 1;
+    repeated Unk7000_CDJPCNFDBMG dynamic_value_map = 2;
+    repeated AbilityAppliedAbility applied_abilities = 3;
+    repeated AbilityAppliedModifier applied_modifiers = 4;
+    repeated AbilityMixinRecoverInfo mixin_recover_infos = 5;
+    repeated Unk7000_CDJPCNFDBMG sgv_dynamic_value_map = 6;
+}
+
+message AvatarSkillInfo {
+    uint32 pass_cd_time = 1;
+    repeated uint32 full_cd_time_list = 2;
+    uint32 max_charge_count = 3;
+}
+
+message Unk7000_PGACFKFKLNB {
+    uint32 PALMJJIIOFM = 1;
+    repeated Item ODAMIGGNJDF = 2;
+    Unk7000_AEIPJNDPMON basic_info = 3;
+    repeated Item GLLBGFFLBLP = 4;
+}
+
+message Unk7000_AEIPJNDPMON {
+    uint32 KGBPBCLMKAK = 1;
+    uint32 BHGKBOIINON = 2;
+}
+
+message MirrorAvatarInfo {
+    uint32 copy_from_avatar_type = 1;
+    uint64 LEEHFFLICIK = 2;
+}
+
+message AvatarExcelInfo {
+    uint64 prefab_path_hash = 1;
+    uint64 prefab_path_remote_hash = 2;
+    uint64 controller_path_hash = 3;
+    uint64 controller_path_remote_hash = 4;
+    uint64 combat_config_hash = 5;
+}
+
+message _BeyondCostumeSetInfo {
+    uint32 _costume_set_index = 1;
+    Unk7000_ILLPGPNCLKN CHJPCJLKDFF = 2;
+    Unk7000_ILLPGPNCLKN CBGECHMHMEK = 3;
+}
+
+message Unk7000_JBIAOCNFPPE {
+    uint32 PEINDKKMJJG = 1;
+    uint32 LELOCMCKMFB = 2;
+}
+
+message Unk7000_LDFLFDFPCEH {
+    uint32 key = 1;
+    uint32 value = 2;
+}
+
+message Unk7000_ILLPGPNCLKN {
+    repeated Unk7000_JBIAOCNFPPE EBECCHABAMM = 1;
+    repeated Unk7000_LDFLFDFPCEH MNHBKDHHEGD = 2;
+}
+
+message FetterData {
+    uint32 fetter_id = 1;
+    uint32 fetter_state = 2;
+    repeated uint32 cond_index_list = 3;
+}
+
+message AvatarFetterInfo {
+    uint32 exp_number = 1;
+    uint32 exp_level = 2;
+    repeated uint32 open_id_list = 3;
+    repeated uint32 finish_id_list = 4;
+    repeated uint32 rewarded_fetter_level_list = 5;
+    repeated FetterData fetter_list = 6;
+}
+
+message AvatarEquipAffixInfo {
+    uint32 equip_affix_id = 1;
+    uint32 left_cd_time = 2;
+}
+
+message AvatarInfo {
+    uint32 avatar_id = 1;
+    uint64 guid = 2;
+    map<uint32, PropValue> prop_map = 3;
+    uint32 life_state = 4;
+    repeated uint64 equip_guid_list = 5;
+    repeated uint32 talent_id_list = 6;
+    map<uint32, float> fight_prop_map = 7;
+    Unk7000_PGACFKFKLNB trial_avatar_info = 9;
+    map<uint32, AvatarSkillInfo> skill_map = 10;
+    uint32 skill_depot_id = 11;
+    AvatarFetterInfo fetter_info = 12;
+    uint32 core_proud_skill_level = 13;
+    repeated uint32 inherent_proud_skill_list = 14;
+    map<uint32, uint32> skill_level_map = 15;
+    AvatarExpeditionState expedition_state = 16;
+    map<uint32, uint32> proud_skill_extra_level_map = 17;
+    bool is_focus = 18;
+    uint32 avatar_type = 19;
+    repeated uint32 team_resonance_list = 20;
+    uint32 wearing_flycloak_id = 21;
+    repeated AvatarEquipAffixInfo equip_affix_list = 22;
+    uint32 born_time = 23;
+    repeated uint32 pending_promote_reward_list = 24;
+    uint32 costume_id = 25;
+    AvatarExcelInfo excel_info = 26;
+    uint32 anim_hash = 27;
+    MirrorAvatarInfo mirror_avatar_info = 28;
+    uint32 JMFFNNBEHGG = 29;
+    uint32 LDHKKNPGIMH = 30;
+    uint32 _trace_effect_id = 31;
+    uint32 _weapon_skin_id = 32;
+    _BeyondCostumeSetInfo _avatar_costume_set = 33;
+    uint32 _voice_id = 34;
+    repeated uint32 _special_proud_skill_list = 35;
+    repeated uint32 _unlocked_skill_depot_id_list = 36;
+    repeated SceneWeaponInfo KPJFLNKEFBC = 37;
+}

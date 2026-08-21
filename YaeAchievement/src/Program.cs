@@ -71,6 +71,7 @@ internal static class Program {
             { 1, AchievementAllDataNotify.OnReceive },
             { 2, PlayerStoreNotify.OnReceive },
             { 3, PlayerPropNotify.OnReceive },
+            { 4, AvatarDataNotify.OnReceive },
         }, () => {
 #if DEBUG_EX
             PlayerPropNotify.OnFinish();
@@ -79,6 +80,7 @@ internal static class Program {
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             }));
 #endif
+            AvatarDataNotify.OnFinish();
             AchievementAllDataNotify.OnFinish();
             Environment.Exit(0);
         });
