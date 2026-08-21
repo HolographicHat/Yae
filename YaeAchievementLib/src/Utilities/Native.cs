@@ -79,7 +79,7 @@ internal static unsafe class Native {
 
     #endregion
 
-    private static readonly nint ModuleBase = GetModuleHandle();
+    public static readonly nint ModuleBase = GetModuleHandle();
 
     public static nint RVAToVA(uint addr) => ModuleBase + (nint) addr;
 
