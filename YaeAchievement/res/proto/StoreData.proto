@@ -41,8 +41,8 @@ message Reliquary {
   uint32 main_prop_id = 4;
   repeated uint32 append_prop_id_list = 5;
   bool is_marked = 6;
-  repeated uint32 Unk6600_DBFGFCJNPOH = 7;
-  repeated uint32 Unk6600_NGHABPMEIGD = 8;
+  repeated uint32 purchased_append_prop_id_list = 7;
+  repeated uint32 definite_append_prop_id_list = 8;
 }
 
 message Weapon {
