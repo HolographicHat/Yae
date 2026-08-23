@@ -257,6 +257,7 @@ public static class Utils {
                         case 0xFC:
                             writer.Write(nativeConf.AchievementCmdId);
                             writer.Write(nativeConf.StoreCmdId);
+                            writer.Write(nativeConf.AvatarCmdId);
                             break;
                         case 0xFD:
                             writer.Write(methodRva.DoCmd);

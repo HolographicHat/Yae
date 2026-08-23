@@ -33,6 +33,7 @@ message MethodRvaConfig {
 message NativeLibConfig {
     uint32 store_cmd_id = 1;
     uint32 achievement_cmd_id = 2;
+    uint32 avatar_cmd_id = 3;
     map<uint32, MethodRvaConfig> method_rva = 10;
 }
 

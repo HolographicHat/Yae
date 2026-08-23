@@ -9,8 +9,7 @@ internal static class CmdId {
 
     public static uint PlayerStoreNotify { get; set; }
 
-    // 与 YaeAchievement.Parsers.AvatarDataNotify.AvatarCmdId 保持一致
-    public const uint AvatarDataNotify = 6586;
+    public static uint AvatarDataNotify { get; set; }
 
 }
 
@@ -95,6 +94,7 @@ internal static class Goshujin {
         _pipeWriter.Write((byte) 0xFC);
         CmdId.AchievementAllDataNotify = _pipeReader.ReadUInt32();
         CmdId.PlayerStoreNotify = _pipeReader.ReadUInt32();
+        CmdId.AvatarDataNotify = _pipeReader.ReadUInt32();
     }
 
     public static unsafe void LoadMethodTable() {
