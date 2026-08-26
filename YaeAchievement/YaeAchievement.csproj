@@ -7,8 +7,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TargetFramework>net9.0-windows</TargetFramework>
-        <FileVersion>5.7.2</FileVersion>
-        <AssemblyVersion>5.7.2</AssemblyVersion>
+        <FileVersion>5.8.0</FileVersion>
+        <AssemblyVersion>5.8.0</AssemblyVersion>
         <ApplicationIcon>res\icon.ico</ApplicationIcon>
         <ApplicationManifest>res\app.manifest</ApplicationManifest>
     </PropertyGroup>

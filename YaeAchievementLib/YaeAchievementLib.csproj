@@ -43,7 +43,7 @@
 
     <PropertyGroup>
         <PackageId>Yae.Lib</PackageId>
-        <Version>5.4.5</Version>
+        <Version>5.5.0</Version>
         <Authors>HoloHat</Authors>
         <DevelopmentDependency>true</DevelopmentDependency>
         <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
