@@ -69,24 +69,35 @@ public enum PropType {
 }
 
 public static class PlayerPropNotify {
-    
-    private static readonly Dictionary<PropType, double> PropMap = [];
+
+    internal static readonly Dictionary<PropType, double> Props = new () {
+        {PlayerHCoin, 0},
+        {PlayerSCoin, 0},
+        {PlayerMCoin, 0},
+        {PlayerHomeCoin, 0},
+        {PlayerWaitSubHCoin, 0},
+        {PlayerWaitSubSCoin, 0},
+        {PlayerWaitSubMCoin, 0},
+        {PlayerRoleCombatCoin, 0},
+        {PlayerWaitSubHomeCoin, 0},
+        {PlayerMusicGameBookCoin, 0},
+    };
 
     public static bool OnReceive(BinaryReader reader) {
-        var propType = (PropType) reader.ReadInt32();
+        var propType = reader.ReadInt32();
         var propValue = reader.ReadDouble();
-        PropMap.Add(propType, propValue);
-        return false;
+        Props[(PropType) propType] = propValue;
+        return true;
     }
 
     public static void OnFinish() {
         PlayerStoreNotify.Instance.ItemList.AddRange([
-            CreateVirtualItem(201, GetPropValue(PlayerHCoin) - GetPropValue(PlayerWaitSubHCoin)),
-            CreateVirtualItem(202, GetPropValue(PlayerSCoin) - GetPropValue(PlayerWaitSubSCoin)),
-            CreateVirtualItem(203, GetPropValue(PlayerMCoin) - GetPropValue(PlayerWaitSubMCoin)),
-            CreateVirtualItem(204, GetPropValue(PlayerHomeCoin) - GetPropValue(PlayerWaitSubHomeCoin)),
-            CreateVirtualItem(206, GetPropValue(PlayerRoleCombatCoin)),
-            CreateVirtualItem(207, GetPropValue(PlayerMusicGameBookCoin)),
+            CreateVirtualItem(201, Props[PlayerHCoin] - Props[PlayerWaitSubHCoin]),
+            CreateVirtualItem(202, Props[PlayerSCoin] - Props[PlayerWaitSubSCoin]),
+            CreateVirtualItem(203, Props[PlayerMCoin] - Props[PlayerWaitSubMCoin]),
+            CreateVirtualItem(204, Props[PlayerHomeCoin] - Props[PlayerWaitSubHomeCoin]),
+            CreateVirtualItem(206, Props[PlayerRoleCombatCoin]),
+            CreateVirtualItem(207, Props[PlayerMusicGameBookCoin]),
         ]);
     }
 
@@ -97,10 +108,6 @@ public static class PlayerPropNotify {
                 Count = (long) count
             }
         };
-    }
-    
-    private static double GetPropValue(PropType propType) {
-        return PropMap.GetValueOrDefault(propType);
     }
 
 }

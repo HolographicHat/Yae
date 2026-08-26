@@ -67,11 +67,7 @@ internal static class Program {
             }
         }
 
-        StartAndWaitResult(AppConfig.GamePath, new Dictionary<int, Func<BinaryReader, bool>> {
-            { 1, AchievementAllDataNotify.OnReceive },
-            { 2, PlayerStoreNotify.OnReceive },
-            { 3, PlayerPropNotify.OnReceive },
-        }, () => {
+        StartAndWaitResult(AppConfig.GamePath, () => {
 #if DEBUG_EX
             PlayerPropNotify.OnFinish();
             File.WriteAllText("store_data.json", JsonSerializer.Serialize(PlayerStoreNotify.Instance, new JsonSerializerOptions {

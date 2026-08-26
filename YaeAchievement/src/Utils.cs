@@ -12,6 +12,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.System.Console;
 using Proto;
 using Spectre.Console;
+using YaeAchievement.Parsers;
 using YaeAchievement.Utilities;
 
 namespace YaeAchievement;
@@ -237,7 +238,7 @@ public static class Utils {
     private static bool _isUnexpectedExit = true;
 
     // ReSharper disable once UnusedMethodReturnValue.Global
-    public static void StartAndWaitResult(string exePath, Dictionary<int, Func<BinaryReader, bool>> handlers, Action onFinish) {
+    public static void StartAndWaitResult(string exePath, Action onFinish) {
         var hash = GetGameHash(exePath);
         var nativeConf = GlobalVars.AchievementInfo.NativeConfig;
         if (!nativeConf.MethodRva.TryGetValue(hash, out var methodRva)) {
@@ -254,9 +255,31 @@ public static class Utils {
                 int type;
                 while ((type = stream.ReadByte()) != -1) {
                     switch (type) {
-                        case 0xFC:
+                        case 0x03:
+                            writer.Write(PlayerPropNotify.OnReceive(reader));
+                            break;
+                        case 0x04:
+                            var cmdId = reader.ReadUInt16();
+                            if (cmdId == nativeConf.AchievementCmdId) {
+                                writer.Write(AchievementAllDataNotify.OnReceive(reader));
+                                break;
+                            }
+                            if (cmdId == nativeConf.StoreCmdId) {
+                                writer.Write(PlayerStoreNotify.OnReceive(reader));
+                                break;
+                            }
+                            writer.Write(true);
+                            break;
+                        case 0xFA:
                             writer.Write(nativeConf.AchievementCmdId);
                             writer.Write(nativeConf.StoreCmdId);
+                            writer.Write(uint.MaxValue); // EOF
+                            break;
+                        case 0xFB:
+                            foreach (var propType in PlayerPropNotify.Props.Keys) {
+                                writer.Write((int) propType);
+                            }
+                            writer.Write(uint.MaxValue); // EOF
                             break;
                         case 0xFD:
                             writer.Write(methodRva.DoCmd);
@@ -278,11 +301,6 @@ public static class Utils {
                             _isUnexpectedExit = false;
                             onFinish();
                             return;
-                    }
-                    if (handlers.TryGetValue(type, out var handler)) {
-                        if (handler(reader)) {
-                            handlers.Remove(type);
-                        }
                     }
                 }
             } catch (IOException e) when (e.Message == "Pipe is broken.") { } // SR.IO_PipeBroken

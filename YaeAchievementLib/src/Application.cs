@@ -18,7 +18,7 @@ internal static unsafe class Application {
         Log.UseConsoleOutput();
         Log.Trace("~");
         Goshujin.Init();
-        Goshujin.LoadCmdTable();
+        Goshujin.LoadTasks();
         Goshujin.LoadMethodTable();
         Goshujin.ResumeMainThread();
         //
@@ -41,6 +41,8 @@ internal static unsafe class Application {
 
     #region RecvPacket
 
+    internal static readonly HashSet<uint> RequiredPackets = [];
+
     private static delegate*unmanaged<byte*, int, int> _toInt32;
 
     [UnmanagedCallersOnly]
@@ -50,26 +52,30 @@ internal static unsafe class Application {
             return ret;
         }
         var cmdId = BinaryPrimitives.ReverseEndianness(*(ushort*) (val + 2));
-        if (cmdId == CmdId.PlayerStoreNotify) {
-            Goshujin.PushStoreData(GetData(val));
-        } else if (cmdId == CmdId.AchievementAllDataNotify) {
-            Goshujin.PushAchievementData(GetData(val));
+        if (RequiredPackets.Contains(cmdId) && TryGetData(val, out var data)) {
+            Goshujin.PushPacketData(cmdId, data);
         }
         return ret;
-        static Span<byte> GetData(byte* val) {
+        static bool TryGetData(byte* val, out Span<byte> data) {
             var headLen = BinaryPrimitives.ReverseEndianness(*(ushort*) (val + 4));
             var headPtr = val + 10;
             var dataLen = BinaryPrimitives.ReverseEndianness(*(uint*) (val + 6));
             var dataPtr = val + 10 + headLen;
+            if (*(ushort*) (val + 10 + headLen + dataLen) != 0xAB89) {
+                data = default;
+                return false;
+            }
             var unzipLen = GetDecompressedSize(new Span<byte>(headPtr, headLen));
             if (unzipLen == 0) {
-                return new Span<byte>(dataPtr, (int) dataLen);
+                data = new Span<byte>(dataPtr, (int) dataLen);
+                return true;
             }
             var unzipBuf = NativeMemory.Alloc(unzipLen);
             if (!Decompress(*TcpStatePtr, *SharedInfoPtr, dataPtr, dataLen, unzipBuf, unzipLen)) {
                 throw new InvalidDataException("Decompress failed.");
             }
-            return new Span<byte>(unzipBuf, (int) unzipLen);
+            data = new Span<byte>(unzipBuf, (int) unzipLen);
+            return true;
         }
     }
 
@@ -117,30 +123,14 @@ internal static unsafe class Application {
 
     #region Prop
 
-    /*
-     * PROP_PLAYER_HCOIN = 10015,
-     * PROP_PLAYER_WAIT_SUB_HCOIN = 10022,
-     * PROP_PLAYER_SCOIN = 10016,
-     * PROP_PLAYER_WAIT_SUB_SCOIN = 10023,
-     * PROP_PLAYER_MCOIN = 10025,
-     * PROP_PLAYER_WAIT_SUB_MCOIN = 10026,
-     * PROP_PLAYER_HOME_COIN = 10042,
-     * PROP_PLAYER_WAIT_SUB_HOME_COIN = 10043,
-     * PROP_PLAYER_ROLE_COMBAT_COIN = 10053,
-     * PROP_PLAYER_MUSIC_GAME_BOOK_COIN = 10058,
-     */
-    public static HashSet<int> RequiredPlayerProperties { get; } = [
-        10015, 10022, 10016, 10023, 10025, 10026, 10042, 10043, 10053, 10058
-    ];
+    internal static readonly HashSet<int> RequiredPlayerProperties = [];
 
     private static delegate*unmanaged<nint, int, double, double, int, void> _updateNormalProp;
 
     [UnmanagedCallersOnly]
     private static void OnUpdateNormalProp(nint @this, int type, double value, double lastValue, int state) {
         _updateNormalProp(@this, type, value, lastValue, state);
-        if (RequiredPlayerProperties.Remove(type)) {
-            Goshujin.PushPlayerProp(type, value);
-        }
+        Goshujin.PushPlayerProp(type, value);
     }
 
     #endregion
