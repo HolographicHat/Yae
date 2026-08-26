@@ -29,12 +29,12 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Sentry" Version="5.13.0"/>
         <PackageReference Include="Spectre.Console" Version="0.50.1-preview.0.22"/>
         <PackageReference Include="Spectre.Console.Analyzer" Version="1.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Sentry" Version="5.13.0" Condition="$(DefineConstants.Contains('ENABLE_SENTRY'))"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -60,7 +60,6 @@
 
     <PropertyGroup>
         <CETCompat>false</CETCompat>
-        <!--        <TrimmerSingleWarn>false</TrimmerSingleWarn>-->
     </PropertyGroup>
 
 </Project>
