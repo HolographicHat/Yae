@@ -53,6 +53,7 @@ internal static class Goshujin {
     }
 
     public static void PushPlayerProp(int type, double value) {
+        Log.Trace($"type={type}, value={value}");
         using (_lock.EnterScope()) {
             _pipeWriter.Write((byte) 3);
             _pipeWriter.Write(type);
@@ -65,6 +66,8 @@ internal static class Goshujin {
     }
 
     public static void PushPacketData(ushort cmdId, Span<byte> data) {
+        Log.Trace($"cmdId={cmdId}, data.Length={data.Length}");
+        Log.Trace($"data={Convert.ToBase64String(data)}");
         using (_lock.EnterScope()) {
             _pipeWriter.Write((byte) 4);
             _pipeWriter.Write(cmdId);
@@ -81,11 +84,13 @@ internal static class Goshujin {
         _pipeWriter.Write((byte) 0xFA);
         uint cmdId;
         while ((cmdId = _pipeReader.ReadUInt32()) != uint.MaxValue) {
+            Log.Trace($"add cmd {cmdId}");
             Application.RequiredPackets.Add(cmdId);
         }
         _pipeWriter.Write((byte) 0xFB);
         uint propType;
         while ((propType = _pipeReader.ReadUInt32()) != uint.MaxValue) {
+            Log.Trace($"add prop {propType}");
             Application.RequiredPlayerProperties.Add((int) propType);
         }
     }
@@ -110,6 +115,7 @@ internal static class Goshujin {
 
     private static void ExitIfFinished() {
         if (Application.RequiredPackets.Count == 0 && Application.RequiredPlayerProperties.Count == 0) {
+            Log.Trace("finish");
             _pipeWriter.Write((byte) 0xFF);
             _pipeReader.ReadBoolean();
             Environment.Exit(0);

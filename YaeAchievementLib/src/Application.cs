@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Yae.Utilities;
 using static Yae.GameMethod;
@@ -23,13 +24,14 @@ internal static unsafe class Application {
         Goshujin.ResumeMainThread();
         //
         Native.WaitMainWindow();
-        Log.ResetConsole();
         //
+        Log.Trace("hook start");
         MinHook.Attach(ToInt32, &OnToInt32, out _toInt32);
         MinHook.Attach(UpdateNormalProp, &OnUpdateNormalProp, out _updateNormalProp);
         if ((nint) EventSystemUpdate != Native.ModuleBase) {
             MinHook.Attach(EventSystemUpdate, &OnEventSystemUpdate, out _eventSystemUpdate);
         }
+        Log.Trace("hook end");
         return 0;
     }
 
@@ -45,36 +47,60 @@ internal static unsafe class Application {
 
     private static delegate*unmanaged<byte*, int, int> _toInt32;
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Il2CppArray<T> where T : unmanaged {
+
+        public UInt128 Object;
+        public void* Bounds;
+        public long Length;
+
+        public T* Vector => (T*) ((nint) Unsafe.AsPointer(ref this) + sizeof(Il2CppArray<T>));
+
+        public Span<T> AsSpan() => Bounds != null
+            ? throw new NotSupportedException()
+            : new Span<T>(Vector, (int) Length);
+
+    }
+
     [UnmanagedCallersOnly]
     private static int OnToInt32(byte* val, int startIndex) {
         var ret = _toInt32(val, startIndex);
+        var arr = (Il2CppArray<byte>*) val;
         if (startIndex != 6 || *(ushort*) (val += 0x20) != 0x6745) {
             return ret;
         }
         var cmdId = BinaryPrimitives.ReverseEndianness(*(ushort*) (val + 2));
-        if (RequiredPackets.Contains(cmdId) && TryGetData(val, out var data)) {
+        Log.Trace($"cmdId={cmdId} totalLen={arr->Length}");
+        if (RequiredPackets.Contains(cmdId) && TryGetData(val, out var data, arr)) {
             Goshujin.PushPacketData(cmdId, data);
         }
         return ret;
-        static bool TryGetData(byte* val, out Span<byte> data) {
+        static bool TryGetData(byte* val, out Span<byte> data, Il2CppArray<byte>* arr) {
+            var cmdId = BinaryPrimitives.ReverseEndianness(*(ushort*) (val + 2));
+            Log.Trace($"{cmdId} all: {Convert.ToBase64String(arr->AsSpan())}");
             var headLen = BinaryPrimitives.ReverseEndianness(*(ushort*) (val + 4));
+            Log.Trace($"{cmdId} headLen: {headLen}");
             var headPtr = val + 10;
             var dataLen = BinaryPrimitives.ReverseEndianness(*(uint*) (val + 6));
+            Log.Trace($"{cmdId} dataLen: {dataLen}");
             var dataPtr = val + 10 + headLen;
             if (*(ushort*) (val + 10 + headLen + dataLen) != 0xAB89) {
                 data = default;
                 return false;
             }
             var unzipLen = GetDecompressedSize(new Span<byte>(headPtr, headLen));
+            Log.Trace($"{cmdId} unzipLen: {unzipLen}");
             if (unzipLen == 0) {
                 data = new Span<byte>(dataPtr, (int) dataLen);
                 return true;
             }
+            Log.Trace($"{cmdId} before unzip: {Convert.ToBase64String(new Span<byte>(dataPtr, (int) dataLen))}");
             var unzipBuf = NativeMemory.Alloc(unzipLen);
             if (!Decompress(*TcpStatePtr, *SharedInfoPtr, dataPtr, dataLen, unzipBuf, unzipLen)) {
                 throw new InvalidDataException("Decompress failed.");
             }
             data = new Span<byte>(unzipBuf, (int) unzipLen);
+            Log.Trace($"{cmdId} after unzip: {Convert.ToBase64String(data)}");
             return true;
         }
     }
