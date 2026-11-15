@@ -23,13 +23,12 @@ internal static unsafe class Native {
         static int EnumWindowsCallback(nint handle, nint extraParameter) {
             uint wProcessId = 0; // Avoid uninitialized variable if the window got closed in the meantime
             _ = User32.GetWindowThreadProcessId(handle, &wProcessId);
-            var cName = (char*) NativeMemory.Alloc(256);
+            var cName = stackalloc char[256];
             if (User32.GetClassNameW(handle, cName, 256) != 0) {
                 if (wProcessId == ProcessId && User32.IsWindowVisible(handle) && new string(cName) == "UnityWndClass") {
                     _hwnd = handle;
                 }
             }
-            NativeMemory.Free(cName);
             return _hwnd == 0 ? 1 : 0;
         }
     }
